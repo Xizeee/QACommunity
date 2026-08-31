@@ -12,6 +12,7 @@ export interface QuestionListParams {
   pageSize?: number;
   sort?: QuestionSort;
   tag?: string;
+  keyword?: string;
 }
 
 export async function getQuestionsApi(

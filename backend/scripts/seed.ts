@@ -1,3 +1,11 @@
+/*
+ * @Author: Cqs 18897653566@163.com
+ * @Date: 2026-08-31 21:19:40
+ * @LastEditors: Cqs 18897653566@163.com
+ * @LastEditTime: 2026-08-31 23:38:32
+ * @Description: 
+ * Copyright (c) 2026 by 18897653566@163.com All Rights Reserved. 
+ */
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 

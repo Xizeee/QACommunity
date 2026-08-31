@@ -22,6 +22,7 @@ export interface QuestionListOptions {
   pageSize: number;
   sort: QuestionSort;
   tagName: string | null;
+  keyword: string | null;
 }
 
 export interface CreateQuestionData {
@@ -54,6 +55,11 @@ function toRecord(row: QuestionRow): QuestionRecord {
 
 const BASE_COLUMNS = `id, user_id, title, content, status, view_count, like_count, answer_count, accepted_answer_id, created_at, updated_at, deleted_at`;
 
+// 转义 LIKE 通配符，保证关键词按字面量匹配（PRD 16.2：标题/内容/标签）
+function escapeLike(value: string): string {
+  return value.replace(/[\\%_]/g, (char) => `\\${char}`);
+}
+
 // 热门排序：互动分 × 新鲜度（48 小时半衰期）的数据库简化实现，
 // 权重与衰减参数为 MVP 初始值，后续可按实际数据调整
 const HOT_SCORE_SQL = `((q.like_count * 2 + q.answer_count * 3 + q.view_count * 0.1)
@@ -77,6 +83,16 @@ export const questionRepository = {
         'q.id IN (SELECT qt.question_id FROM question_tags qt JOIN tags t ON t.id = qt.tag_id WHERE t.name = :tagName)',
       );
       params.tagName = options.tagName;
+    }
+    if (options.keyword) {
+      conditions.push(
+        `(q.title LIKE :keywordLike OR q.content LIKE :keywordLike
+          OR q.id IN (
+            SELECT qt.question_id FROM question_tags qt JOIN tags t ON t.id = qt.tag_id
+            WHERE t.name LIKE :keywordLike
+          ))`,
+      );
+      params.keywordLike = `%${escapeLike(options.keyword)}%`;
     }
     const where = `WHERE ${conditions.join(' AND ')}`;
 

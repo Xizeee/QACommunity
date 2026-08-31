@@ -16,6 +16,7 @@ export const MIN_TAGS = 1;
 export const MAX_TAGS = 5;
 export const DEFAULT_PAGE_SIZE = 20;
 export const MAX_PAGE_SIZE = 100;
+export const MAX_KEYWORD_LENGTH = 100;
 
 export interface QuestionContentInput {
   title: string;
@@ -28,6 +29,7 @@ export interface ListQueryInput {
   pageSize?: string;
   sort?: string;
   tag?: string;
+  keyword?: string;
 }
 
 interface QuestionBase {
@@ -129,8 +131,9 @@ export const questionService = {
       throw new ApiError(400, 'VALIDATION_ERROR', 'sort 只支持 latest / hot / unsolved');
     }
     const tagName = query.tag?.trim() || null;
+    const keyword = parseKeyword(query.keyword);
 
-    const { ids, total } = await questionRepository.list({ page, pageSize, sort, tagName });
+    const { ids, total } = await questionRepository.list({ page, pageSize, sort, tagName, keyword });
     const records = await questionRepository.findByIds(ids);
     // 保持 SQL 排序顺序（热门排序无法在内存中重算）
     const ordered = ids
@@ -223,4 +226,18 @@ function parsePositiveInt(value: string | undefined, field: string): number {
     throw new ApiError(400, 'VALIDATION_ERROR', `${field} 必须为正整数`);
   }
   return parsed;
+}
+
+function parseKeyword(value: string | undefined): string | null {
+  if (value === undefined) {
+    return null;
+  }
+  const keyword = value.trim();
+  if (keyword === '') {
+    return null;
+  }
+  if (keyword.length > MAX_KEYWORD_LENGTH) {
+    throw new ApiError(400, 'VALIDATION_ERROR', `keyword 长度不能超过 ${MAX_KEYWORD_LENGTH} 个字符`);
+  }
+  return keyword;
 }
