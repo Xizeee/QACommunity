@@ -5,6 +5,8 @@ interface AnswerListProps {
   answers: AnswerSummary[];
   currentUserId: number | undefined;
   likedAnswerIds: Set<number>;
+  canAccept: boolean;
+  onAccept: (answerId: number) => Promise<void>;
   onUpdated: (answer: AnswerSummary) => Promise<void>;
   onDeleted: (answerId: number) => Promise<void>;
 }
@@ -13,6 +15,8 @@ export function AnswerList({
   answers,
   currentUserId,
   likedAnswerIds,
+  canAccept,
+  onAccept,
   onUpdated,
   onDeleted,
 }: AnswerListProps) {
@@ -27,6 +31,8 @@ export function AnswerList({
           answer={answer}
           isOwner={answer.author.id === currentUserId}
           liked={likedAnswerIds.has(answer.id)}
+          canAccept={canAccept}
+          onAccept={onAccept}
           onUpdated={onUpdated}
           onDeleted={onDeleted}
         />

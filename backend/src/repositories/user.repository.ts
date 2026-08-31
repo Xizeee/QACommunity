@@ -1,4 +1,4 @@
-import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { PoolConnection, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { pool } from '../config/database';
 import { UserRecord, UserRole } from '../types/user';
 
@@ -85,5 +85,17 @@ export const userRepository = {
       },
     );
     return result.insertId;
+  },
+
+  // 积分余额增减，需在积分事务内调用（PRD 18.2 / BR-011）
+  async incrementPoints(
+    connection: PoolConnection,
+    userId: number,
+    amount: number,
+  ): Promise<void> {
+    await connection.execute(
+      'UPDATE users SET points = points + :amount WHERE id = :userId',
+      { amount, userId },
+    );
   },
 };

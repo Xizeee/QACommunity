@@ -3,6 +3,7 @@ import { answerRepository } from '../repositories/answer.repository';
 import { questionRepository } from '../repositories/question.repository';
 import { userRepository } from '../repositories/user.repository';
 import { ApiError } from '../utils/apiError';
+import { pointService } from './point.service';
 import { AnswerListResult, AnswerSummary } from '../types/answer';
 
 export const MAX_ANSWER_CONTENT_LENGTH = 50000;
@@ -179,5 +180,64 @@ export const answerService = {
     } finally {
       connection.release();
     }
+  },
+
+  // 采纳答案：仅提问者可采纳，一个问题最多一个采纳答案（PRD 13 / BR-003/004/007/008）
+  async acceptAnswer(userId: number, questionId: number, answerId: unknown): Promise<AnswerSummary> {
+    assertValidId(questionId, '问题 ID ');
+    if (typeof answerId !== 'number' || !Number.isInteger(answerId) || answerId <= 0) {
+      throw new ApiError(400, 'VALIDATION_ERROR', '回答 ID 不合法');
+    }
+
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+      // 先锁回答、再锁问题，与删除回答的加锁顺序一致，避免死锁；
+      // 问题行锁同时串行化并发采纳，保证一个问题最多一个采纳答案（DATABASE_DESIGN 22）。
+      const answer = await answerRepository.findByIdForUpdate(connection, answerId);
+      if (!answer || answer.status === 'DELETED' || answer.deletedAt) {
+        throw new ApiError(404, 'ANSWER_NOT_FOUND', '回答不存在');
+      }
+      const question = await questionRepository.findByIdForUpdate(connection, questionId);
+      if (!question || question.status === 'DELETED' || question.deletedAt) {
+        throw new ApiError(404, 'QUESTION_NOT_FOUND', '问题不存在');
+      }
+      if (question.userId !== userId) {
+        throw new ApiError(403, 'FORBIDDEN', '只有提问者可以采纳答案');
+      }
+      if (answer.questionId !== questionId) {
+        throw new ApiError(400, 'INVALID_ANSWER', '该回答不属于此问题');
+      }
+
+      if (question.acceptedAnswerId === null) {
+        // 首次采纳：更新状态 + 发放采纳积分（同一事务）
+        await answerRepository.accept(connection, answerId);
+        await questionRepository.acceptAnswer(connection, questionId, answerId);
+        await pointService.awardAnswerAccepted(connection, answer.userId, answerId);
+      } else if (question.acceptedAnswerId !== answerId) {
+        // PRD 13.3 / BR-008：采纳后不可更换答案
+        throw new ApiError(400, 'QUESTION_ALREADY_SOLVED', '该问题已采纳答案，不能更换');
+      }
+      // 已采纳同一答案：幂等成功，不重复发放积分
+      await connection.commit();
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+
+    const accepted = await answerRepository.findById(answerId);
+    const authorMap = await loadAuthorMap([accepted!.userId]);
+    return {
+      id: accepted!.id,
+      questionId: accepted!.questionId,
+      content: accepted!.content,
+      status: accepted!.status,
+      likeCount: accepted!.likeCount,
+      author: authorMap.get(accepted!.userId) ?? { id: accepted!.userId, username: '未知用户' },
+      createdAt: accepted!.createdAt,
+      updatedAt: accepted!.updatedAt,
+    };
   },
 };

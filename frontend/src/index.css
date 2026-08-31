@@ -211,7 +211,30 @@ body {
 }
 
 .answer-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-top: 10px;
+}
+
+.accept-button {
+  margin-left: auto;
+  padding: 4px 12px;
+  border: 1px solid #1a7f37;
+  border-radius: 6px;
+  background: #fff;
+  color: #1a7f37;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.accept-button:hover {
+  background: #dafbe1;
+}
+
+.accept-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .filter-hint {

@@ -121,6 +121,14 @@ export const answerRepository = {
     );
   },
 
+  // 采纳答案：将回答标记为已采纳（PRD 13.2）
+  async accept(connection: PoolConnection, id: number): Promise<void> {
+    await connection.execute(
+      "UPDATE answers SET status = 'ACCEPTED' WHERE id = :id",
+      { id },
+    );
+  },
+
   // 点赞/取消点赞时维护 like_count 统计，需在点赞事务内调用
   async incrementLikeCount(connection: PoolConnection, id: number): Promise<void> {
     await connection.execute(

@@ -157,6 +157,18 @@ export const questionRepository = {
     );
   },
 
+  // 采纳答案：记录 accepted_answer_id 并将问题标记为已解决（PRD 10.4 / BR-007）
+  async acceptAnswer(
+    connection: PoolConnection,
+    id: number,
+    answerId: number,
+  ): Promise<void> {
+    await connection.execute(
+      "UPDATE questions SET accepted_answer_id = :answerId, status = 'SOLVED' WHERE id = :id",
+      { answerId, id },
+    );
+  },
+
   async incrementViewCount(id: number): Promise<void> {
     await pool.execute('UPDATE questions SET view_count = view_count + 1 WHERE id = :id', {
       id,

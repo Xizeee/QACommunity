@@ -8,6 +8,7 @@ import { AnswerList } from '../../components/answer/AnswerList';
 import { LikeButton } from '../../components/like/LikeButton';
 import { deleteQuestionApi, getQuestionApi } from '../../services/api/questionApi';
 import {
+  acceptAnswerApi,
   createAnswerApi,
   deleteAnswerApi,
   getAnswersApi,
@@ -180,6 +181,13 @@ export function QuestionDetailPage() {
     );
   };
 
+  const handleAccept = async (answerId: number) => {
+    await acceptAnswerApi(questionId, answerId);
+    // 采纳后回答排序（已采纳优先）与问题状态变化，重新加载第一页并本地标记已解决
+    reloadAnswers(1);
+    setQuestion((current) => (current ? { ...current, status: 'SOLVED' } : current));
+  };
+
   if (loading || authStatus === 'idle' || authStatus === 'loading') {
     return <p className="hint">加载中...</p>;
   }
@@ -258,6 +266,8 @@ export function QuestionDetailPage() {
               answers={answerResult?.items ?? []}
               currentUserId={user?.id}
               likedAnswerIds={likedAnswerIds}
+              canAccept={isAuthor && question.status !== 'SOLVED'}
+              onAccept={handleAccept}
               onUpdated={handleAnswerUpdated}
               onDeleted={handleAnswerDeleted}
             />

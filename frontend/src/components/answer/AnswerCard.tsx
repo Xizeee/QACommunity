@@ -8,6 +8,8 @@ interface AnswerCardProps {
   answer: AnswerSummary;
   isOwner: boolean;
   liked: boolean;
+  canAccept: boolean;
+  onAccept: (answerId: number) => Promise<void>;
   onUpdated: (answer: AnswerSummary) => Promise<void>;
   onDeleted: (answerId: number) => Promise<void>;
 }
@@ -16,6 +18,8 @@ export function AnswerCard({
   answer,
   isOwner,
   liked,
+  canAccept,
+  onAccept,
   onUpdated,
   onDeleted,
 }: AnswerCardProps) {
@@ -23,6 +27,8 @@ export function AnswerCard({
   const [content, setContent] = useState(answer.content);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [accepting, setAccepting] = useState(false);
+  const [acceptError, setAcceptError] = useState<string | null>(null);
 
   const handleSave = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -50,6 +56,21 @@ export function AnswerCard({
       await onDeleted(answer.id);
     } catch (err) {
       setError(err instanceof Error ? err.message : '删除失败');
+    }
+  };
+
+  const handleAccept = async () => {
+    if (!window.confirm('确定采纳这条回答为最佳答案吗？采纳后问题将标记为已解决。')) {
+      return;
+    }
+    setAccepting(true);
+    setAcceptError(null);
+    try {
+      await onAccept(answer.id);
+    } catch (err) {
+      setAcceptError(err instanceof Error ? err.message : '采纳失败');
+    } finally {
+      setAccepting(false);
     }
   };
 
@@ -107,6 +128,17 @@ export function AnswerCard({
           liked={liked}
           disabled={isOwner}
         />
+        {canAccept && answer.status !== 'ACCEPTED' && (
+          <button
+            type="button"
+            className="accept-button"
+            onClick={handleAccept}
+            disabled={accepting}
+          >
+            {accepting ? '采纳中...' : '采纳答案'}
+          </button>
+        )}
+        {acceptError && <p className="form-error">{acceptError}</p>}
       </div>
     </article>
   );

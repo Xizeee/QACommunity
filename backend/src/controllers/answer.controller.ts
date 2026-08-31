@@ -59,4 +59,16 @@ export const answerController = {
     await answerService.deleteAnswer(user.id, answerId);
     res.json({ success: true, data: null });
   }),
+
+  accept: asyncHandler(async (req: Request, res: Response) => {
+    const user = req.user as AuthUser;
+    const questionId = parseId(req.params.questionId);
+    if (questionId === 0) {
+      invalidId(res, '问题 ID ');
+      return;
+    }
+    const body = (req.body ?? {}) as Record<string, unknown>;
+    const answer = await answerService.acceptAnswer(user.id, questionId, body.answerId);
+    res.json({ success: true, data: { answer } });
+  }),
 };

@@ -20,3 +20,6 @@ questionRouter.post(
   validateAnswerContent,
   answerController.create,
 );
+
+// 采纳答案（TECH_DESIGN 28）
+questionRouter.post('/:questionId/accept-answer', requireAuth, answerController.accept);

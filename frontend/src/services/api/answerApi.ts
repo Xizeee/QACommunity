@@ -42,3 +42,14 @@ export async function updateAnswerApi(
 export async function deleteAnswerApi(answerId: number): Promise<void> {
   await http.delete(`/answers/${answerId}`);
 }
+
+export async function acceptAnswerApi(
+  questionId: number,
+  answerId: number,
+): Promise<AnswerSummary> {
+  const response = await http.post<ApiSuccess<{ answer: AnswerSummary }>>(
+    `/questions/${questionId}/accept-answer`,
+    { answerId },
+  );
+  return response.data.data.answer;
+}
