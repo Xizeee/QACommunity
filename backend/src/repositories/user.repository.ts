@@ -63,6 +63,18 @@ export const userRepository = {
     return rows[0] ? toRecord(rows[0]) : null;
   },
 
+  async findByIds(ids: number[]): Promise<UserRecord[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+    const placeholders = ids.map(() => '?').join(', ');
+    const [rows] = await pool.query<UserRow[]>(
+      `SELECT ${SELECT_COLUMNS} FROM users WHERE id IN (${placeholders})`,
+      ids,
+    );
+    return rows.map(toRecord);
+  },
+
   async create(input: CreateUserInput): Promise<number> {
     const [result] = await pool.execute<ResultSetHeader>(
       'INSERT INTO users (username, email, password_hash) VALUES (:username, :email, :passwordHash)',

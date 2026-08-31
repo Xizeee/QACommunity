@@ -73,3 +73,54 @@ export function validateLogin(
   req.body = { email, password };
   next();
 }
+
+const MAX_TITLE_LENGTH = 100;
+const MIN_TITLE_LENGTH = 5;
+const MAX_CONTENT_LENGTH = 50000;
+const MIN_TAGS = 1;
+const MAX_TAGS = 5;
+
+// 问题标题/内容/标签的创建与更新共用同一套规则（PRD 9.1 / 9.3）
+export function validateQuestionContent(
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+): void {
+  if (!req.body || typeof req.body !== 'object') {
+    next(new ApiError(400, 'VALIDATION_ERROR', '请求体不能为空'));
+    return;
+  }
+  const body = req.body as Record<string, unknown>;
+  const title = typeof body.title === 'string' ? body.title : '';
+  const content = typeof body.content === 'string' ? body.content : '';
+  const tagIds = Array.isArray(body.tagIds) ? body.tagIds : [];
+
+  const errors: string[] = [];
+  const trimmedTitle = title.trim();
+  if (trimmedTitle.length < MIN_TITLE_LENGTH || trimmedTitle.length > MAX_TITLE_LENGTH) {
+    errors.push(`标题长度必须为 ${MIN_TITLE_LENGTH}～${MAX_TITLE_LENGTH} 个字符`);
+  }
+  if (content.trim().length === 0) {
+    errors.push('内容不能为空');
+  } else if (content.length > MAX_CONTENT_LENGTH) {
+    errors.push(`内容长度不能超过 ${MAX_CONTENT_LENGTH} 个字符`);
+  }
+  const uniqueTags = [...new Set(tagIds)];
+  if (uniqueTags.length < MIN_TAGS || uniqueTags.length > MAX_TAGS) {
+    errors.push(`标签数量必须为 ${MIN_TAGS}～${MAX_TAGS} 个`);
+  } else if (uniqueTags.some((id) => typeof id !== 'number' || !Number.isInteger(id) || id <= 0)) {
+    errors.push('标签 ID 不合法');
+  }
+
+  if (errors.length > 0) {
+    next(new ApiError(400, 'VALIDATION_ERROR', errors.join('；')));
+    return;
+  }
+
+  req.body = {
+    title: trimmedTitle,
+    content,
+    tagIds: uniqueTags as number[],
+  };
+  next();
+}

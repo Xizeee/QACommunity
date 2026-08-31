@@ -3,6 +3,9 @@ import { MainLayout } from '../layouts/MainLayout';
 import { HomePage } from '../pages/Home';
 import { LoginPage } from '../pages/Login';
 import { RegisterPage } from '../pages/Register';
+import { AskQuestionPage } from '../pages/AskQuestion';
+import { EditQuestionPage } from '../pages/EditQuestion';
+import { QuestionDetailPage } from '../pages/QuestionDetail';
 
 export const router = createBrowserRouter([
   {
@@ -12,6 +15,9 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
+      { path: 'questions/ask', element: <AskQuestionPage /> },
+      { path: 'questions/:id', element: <QuestionDetailPage /> },
+      { path: 'questions/:id/edit', element: <EditQuestionPage /> },
     ],
   },
 ]);
