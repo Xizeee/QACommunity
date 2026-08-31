@@ -1,14 +1,16 @@
 import { Link } from 'react-router-dom';
 import { QuestionSummary } from '../../types';
 import { TagList } from '../tag/TagList';
+import { LikeButton } from '../like/LikeButton';
 import { formatDate } from '../../utils/format';
 
 interface QuestionCardProps {
   question: QuestionSummary;
+  liked?: boolean;
   onTagClick?: (name: string) => void;
 }
 
-export function QuestionCard({ question, onTagClick }: QuestionCardProps) {
+export function QuestionCard({ question, liked = false, onTagClick }: QuestionCardProps) {
   return (
     <article className="question-card">
       <div className="question-card-head">
@@ -19,7 +21,12 @@ export function QuestionCard({ question, onTagClick }: QuestionCardProps) {
       </div>
       <TagList tags={question.tags} onTagClick={onTagClick} />
       <div className="question-card-meta">
-        <span>👍 {question.likeCount}</span>
+        <LikeButton
+          targetType="QUESTION"
+          targetId={question.id}
+          likeCount={question.likeCount}
+          liked={liked}
+        />
         <span>💬 {question.answerCount}</span>
         <span>👁 {question.viewCount}</span>
         <span className="meta-author">

@@ -4,6 +4,7 @@ import { AnswerCard } from './AnswerCard';
 interface AnswerListProps {
   answers: AnswerSummary[];
   currentUserId: number | undefined;
+  likedAnswerIds: Set<number>;
   onUpdated: (answer: AnswerSummary) => Promise<void>;
   onDeleted: (answerId: number) => Promise<void>;
 }
@@ -11,6 +12,7 @@ interface AnswerListProps {
 export function AnswerList({
   answers,
   currentUserId,
+  likedAnswerIds,
   onUpdated,
   onDeleted,
 }: AnswerListProps) {
@@ -24,6 +26,7 @@ export function AnswerList({
           key={answer.id}
           answer={answer}
           isOwner={answer.author.id === currentUserId}
+          liked={likedAnswerIds.has(answer.id)}
           onUpdated={onUpdated}
           onDeleted={onDeleted}
         />

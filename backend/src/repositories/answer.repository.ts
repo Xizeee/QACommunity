@@ -120,4 +120,19 @@ export const answerRepository = {
       { id },
     );
   },
+
+  // 点赞/取消点赞时维护 like_count 统计，需在点赞事务内调用
+  async incrementLikeCount(connection: PoolConnection, id: number): Promise<void> {
+    await connection.execute(
+      'UPDATE answers SET like_count = like_count + 1 WHERE id = :id',
+      { id },
+    );
+  },
+
+  async decrementLikeCount(connection: PoolConnection, id: number): Promise<void> {
+    await connection.execute(
+      'UPDATE answers SET like_count = GREATEST(like_count - 1, 0) WHERE id = :id',
+      { id },
+    );
+  },
 };

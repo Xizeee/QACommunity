@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { QuestionCard } from '../../components/question/QuestionCard';
 import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
 import { getQuestionsApi } from '../../services/api/questionApi';
+import { useLikedIds } from '../../hooks/useLikedIds';
 import { useAuthStore } from '../../stores/authStore';
 import type { QuestionListResult, QuestionSort } from '../../types';
 
@@ -27,6 +28,12 @@ export function HomePage() {
   const [result, setResult] = useState<QuestionListResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const questionIds = useMemo(
+    () => (result ? result.items.map((question) => question.id) : []),
+    [result],
+  );
+  const likedQuestionIds = useLikedIds('QUESTION', questionIds);
 
   useEffect(() => {
     let active = true;
@@ -127,6 +134,7 @@ export function HomePage() {
               <QuestionCard
                 key={question.id}
                 question={question}
+                liked={likedQuestionIds.has(question.id)}
                 onTagClick={(name) => updateParams({ tag: name })}
               />
             ))}

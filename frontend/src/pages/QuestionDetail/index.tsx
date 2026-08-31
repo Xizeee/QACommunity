@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { MarkdownContent } from '../../components/common/MarkdownContent';
 import { TagList } from '../../components/tag/TagList';
 import { Pagination } from '../../components/common/Pagination';
 import { AnswerForm } from '../../components/answer/AnswerForm';
 import { AnswerList } from '../../components/answer/AnswerList';
+import { LikeButton } from '../../components/like/LikeButton';
 import { deleteQuestionApi, getQuestionApi } from '../../services/api/questionApi';
 import {
   createAnswerApi,
@@ -12,6 +13,7 @@ import {
   getAnswersApi,
   updateAnswerApi,
 } from '../../services/api/answerApi';
+import { useLikedIds } from '../../hooks/useLikedIds';
 import { useAuthStore } from '../../stores/authStore';
 import { formatDate } from '../../utils/format';
 import type { AnswerListResult, QuestionDetail } from '../../types';
@@ -100,6 +102,15 @@ export function QuestionDetailPage() {
       reloadAnswers(1);
     }
   }, [question, reloadAnswers]);
+
+  const questionLikeIds = useMemo(() => (question ? [question.id] : []), [question]);
+  const likedQuestionIds = useLikedIds('QUESTION', questionLikeIds);
+
+  const answerIds = useMemo(
+    () => (answerResult ? answerResult.items.map((answer) => answer.id) : []),
+    [answerResult],
+  );
+  const likedAnswerIds = useLikedIds('ANSWER', answerIds);
 
   const handleDelete = async () => {
     if (!question) {
@@ -202,7 +213,13 @@ export function QuestionDetailPage() {
             {question.author.username} · 发布于 {formatDate(question.createdAt)}
           </span>
           <span>👁 {question.viewCount} 次浏览</span>
-          <span>👍 {question.likeCount}</span>
+          <LikeButton
+            targetType="QUESTION"
+            targetId={question.id}
+            likeCount={question.likeCount}
+            liked={likedQuestionIds.has(question.id)}
+            disabled={isAuthor}
+          />
           <span>💬 {question.answerCount}</span>
           {question.updatedAt !== question.createdAt && (
             <span>更新于 {formatDate(question.updatedAt)}</span>
@@ -240,6 +257,7 @@ export function QuestionDetailPage() {
             <AnswerList
               answers={answerResult?.items ?? []}
               currentUserId={user?.id}
+              likedAnswerIds={likedAnswerIds}
               onUpdated={handleAnswerUpdated}
               onDeleted={handleAnswerDeleted}
             />

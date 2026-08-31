@@ -1,16 +1,24 @@
 import { FormEvent, useState } from 'react';
 import { MarkdownContent } from '../common/MarkdownContent';
+import { LikeButton } from '../like/LikeButton';
 import { formatDate } from '../../utils/format';
 import type { AnswerSummary } from '../../types';
 
 interface AnswerCardProps {
   answer: AnswerSummary;
   isOwner: boolean;
+  liked: boolean;
   onUpdated: (answer: AnswerSummary) => Promise<void>;
   onDeleted: (answerId: number) => Promise<void>;
 }
 
-export function AnswerCard({ answer, isOwner, onUpdated, onDeleted }: AnswerCardProps) {
+export function AnswerCard({
+  answer,
+  isOwner,
+  liked,
+  onUpdated,
+  onDeleted,
+}: AnswerCardProps) {
   const [editing, setEditing] = useState(false);
   const [content, setContent] = useState(answer.content);
   const [error, setError] = useState<string | null>(null);
@@ -91,6 +99,15 @@ export function AnswerCard({ answer, isOwner, onUpdated, onDeleted }: AnswerCard
           )}
         </>
       )}
+      <div className="answer-card-footer">
+        <LikeButton
+          targetType="ANSWER"
+          targetId={answer.id}
+          likeCount={answer.likeCount}
+          liked={liked}
+          disabled={isOwner}
+        />
+      </div>
     </article>
   );
 }
