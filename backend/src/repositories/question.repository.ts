@@ -162,4 +162,25 @@ export const questionRepository = {
       id,
     });
   },
+
+  // 回答创建/删除时维护 answer_count 统计，需在回答事务内调用
+  async incrementAnswerCount(
+    connection: PoolConnection,
+    id: number,
+  ): Promise<void> {
+    await connection.execute(
+      'UPDATE questions SET answer_count = answer_count + 1 WHERE id = :id',
+      { id },
+    );
+  },
+
+  async decrementAnswerCount(
+    connection: PoolConnection,
+    id: number,
+  ): Promise<void> {
+    await connection.execute(
+      'UPDATE questions SET answer_count = GREATEST(answer_count - 1, 0) WHERE id = :id',
+      { id },
+    );
+  },
 };

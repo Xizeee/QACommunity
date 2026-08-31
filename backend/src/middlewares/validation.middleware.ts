@@ -80,6 +80,29 @@ const MAX_CONTENT_LENGTH = 50000;
 const MIN_TAGS = 1;
 const MAX_TAGS = 5;
 
+// 回答内容校验（PRD 12.1：不能为空，支持 Markdown）
+export function validateAnswerContent(
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+): void {
+  if (!req.body || typeof req.body !== 'object') {
+    next(new ApiError(400, 'VALIDATION_ERROR', '请求体不能为空'));
+    return;
+  }
+  const content = req.body.content;
+  if (typeof content !== 'string' || content.trim().length === 0) {
+    next(new ApiError(400, 'VALIDATION_ERROR', '回答内容不能为空'));
+    return;
+  }
+  if (content.length > MAX_CONTENT_LENGTH) {
+    next(new ApiError(400, 'VALIDATION_ERROR', `回答内容不能超过 ${MAX_CONTENT_LENGTH} 个字符`));
+    return;
+  }
+  req.body = { content };
+  next();
+}
+
 // 问题标题/内容/标签的创建与更新共用同一套规则（PRD 9.1 / 9.3）
 export function validateQuestionContent(
   req: Request,

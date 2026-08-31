@@ -457,3 +457,112 @@ body {
 .markdown-body img {
   max-width: 100%;
 }
+
+/* 回答区域 */
+.answer-section {
+  margin-top: 16px;
+}
+
+.answer-section-title {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+
+.answer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.answer-card {
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.answer-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #57606a;
+}
+
+.answer-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 12px;
+}
+
+.answer-actions .link-button.danger {
+  color: #cf222e;
+}
+
+.answer-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.answer-edit-form textarea,
+.answer-form textarea {
+  padding: 8px 10px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.answer-edit-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.answer-edit-actions button,
+.answer-form button {
+  align-self: flex-start;
+  padding: 6px 18px;
+  border: none;
+  border-radius: 6px;
+  background: #1f6feb;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.answer-edit-actions button[type='button'] {
+  background: #fff;
+  border: 1px solid #d0d7de;
+  color: #57606a;
+}
+
+.answer-form button:disabled,
+.answer-edit-actions button:disabled {
+  background: #8cb6f5;
+  cursor: not-allowed;
+}
+
+.answer-create {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e1e4e8;
+}
+
+.answer-create h3 {
+  font-size: 14px;
+  color: #57606a;
+  margin: 0 0 10px;
+}
+
+.answer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.edited-hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+}
