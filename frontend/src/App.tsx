@@ -1,5 +1,14 @@
-function App() {
-  return <div>问答社区</div>;
-}
+import { useEffect } from 'react';
+import { RouterProvider } from 'react-router-dom';
+import { router } from './router';
+import { useAuthStore } from './stores/authStore';
 
-export default App;
+export default function App() {
+  const initialize = useAuthStore((state) => state.initialize);
+
+  useEffect(() => {
+    void initialize();
+  }, [initialize]);
+
+  return <RouterProvider router={router} />;
+}

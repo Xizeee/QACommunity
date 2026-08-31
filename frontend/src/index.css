@@ -1,0 +1,118 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #f5f6f8;
+  color: #24292f;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 32px;
+  background: #fff;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f6feb;
+  text-decoration: none;
+}
+
+.header-auth {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-auth a {
+  color: #1f6feb;
+  text-decoration: none;
+}
+
+.user-brief {
+  color: #57606a;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.auth-card {
+  max-width: 420px;
+  margin: 32px auto;
+}
+
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  color: #57606a;
+}
+
+.auth-card input {
+  padding: 8px 10px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.auth-card button {
+  padding: 8px 0;
+  border: none;
+  border-radius: 6px;
+  background: #1f6feb;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.auth-card button:disabled {
+  background: #8cb6f5;
+  cursor: not-allowed;
+}
+
+.form-error {
+  margin: 0;
+  color: #cf222e;
+  font-size: 13px;
+}
+
+.hint {
+  color: #57606a;
+  font-size: 14px;
+}
+
+.hint a {
+  color: #1f6feb;
+}

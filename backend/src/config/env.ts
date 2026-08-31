@@ -13,6 +13,7 @@ export interface Env {
     password: string;
   };
   authSecret: string;
+  authExpiresIn: string;
   allowedOrigins: string[];
 }
 
@@ -34,6 +35,7 @@ export const config: Env = {
     password: env.DATABASE_PASSWORD ?? '',
   },
   authSecret: env.AUTH_SECRET ?? '',
+  authExpiresIn: env.AUTH_EXPIRES_IN ?? '7d',
   allowedOrigins: (env.ALLOWED_ORIGINS ?? 'http://localhost:5173')
     .split(',')
     .map((origin) => origin.trim())
