@@ -111,6 +111,28 @@ export const questionRepository = {
     return { ids: rows.map((row) => Number(row.id)), total };
   },
 
+  // 按作者分页列出问题（我的提问，PRD 20.2）
+  async listByUser(
+    userId: number,
+    page: number,
+    pageSize: number,
+  ): Promise<{ ids: number[]; total: number }> {
+    const [countRows] = await pool.query<RowDataPacket[]>(
+      'SELECT COUNT(*) AS total FROM questions WHERE user_id = :userId AND deleted_at IS NULL',
+      { userId },
+    );
+    const total = Number(countRows[0].total);
+
+    const [rows] = await pool.query<RowDataPacket[]>(
+      `SELECT id FROM questions
+       WHERE user_id = :userId AND deleted_at IS NULL
+       ORDER BY created_at DESC, id DESC
+       LIMIT :limit OFFSET :offset`,
+      { userId, limit: pageSize, offset: (page - 1) * pageSize },
+    );
+    return { ids: rows.map((row) => Number(row.id)), total };
+  },
+
   async findByIds(ids: number[]): Promise<QuestionRecord[]> {
     if (ids.length === 0) {
       return [];

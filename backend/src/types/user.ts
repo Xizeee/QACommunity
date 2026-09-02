@@ -26,3 +26,10 @@ export interface AuthUser {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// 个人中心展示：基本信息 + 内容统计（PRD 20.1）
+export interface UserProfile extends AuthUser {
+  questionCount: number;
+  answerCount: number;
+  likeCount: number;
+}

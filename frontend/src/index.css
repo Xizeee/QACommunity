@@ -648,3 +648,144 @@ body {
   margin: 6px 0 0;
   font-size: 12px;
 }
+
+/* 个人中心 */
+.profile-card {
+  background: #fff;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #1f6feb;
+  color: #fff;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile-info {
+  min-width: 0;
+}
+
+.profile-name {
+  margin: 0;
+  font-size: 20px;
+  color: #1f2328;
+}
+
+.profile-bio {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #57606a;
+  overflow-wrap: break-word;
+}
+
+.profile-stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e1e4e8;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #24292f;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #57606a;
+}
+
+.me-nav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.me-nav a {
+  padding: 6px 14px;
+  border: 1px solid #d0d7de;
+  border-radius: 16px;
+  background: #fff;
+  color: #57606a;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.me-nav a:hover {
+  border-color: #1f6feb;
+  color: #1f6feb;
+}
+
+/* 我的积分 */
+.points-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.points-total {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1f6feb;
+}
+
+.point-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.point-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+}
+
+.point-label {
+  font-size: 14px;
+  color: #24292f;
+}
+
+.point-amount {
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.point-amount.positive {
+  color: #1a7f37;
+}
+
+.point-amount.negative {
+  color: #cf222e;
+}

@@ -11,3 +11,9 @@ export interface User {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface UserProfile extends User {
+  questionCount: number;
+  answerCount: number;
+  likeCount: number;
+}

@@ -4,7 +4,7 @@ import { questionRepository } from '../repositories/question.repository';
 import { userRepository } from '../repositories/user.repository';
 import { ApiError } from '../utils/apiError';
 import { pointService } from './point.service';
-import { AnswerListResult, AnswerSummary } from '../types/answer';
+import { AnswerListResult, AnswerSummary, UserAnswerListResult, UserAnswerSummary } from '../types/answer';
 
 export const MAX_ANSWER_CONTENT_LENGTH = 50000;
 export const DEFAULT_PAGE_SIZE = 20;
@@ -112,6 +112,38 @@ export const answerService = {
       status: record.status,
       likeCount: record.likeCount,
       author: authorMap.get(record.userId) ?? { id: record.userId, username: '未知用户' },
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
+    }));
+
+    return { items, pagination: { page, pageSize, total } };
+  },
+
+  // 我的回答：按作者分页，附带所属问题标题（PRD 20.3）
+  async listAnswersByUser(userId: number, query: AnswerListQueryInput): Promise<UserAnswerListResult> {
+    const page = parsePositiveInt(query.page ?? '1', 'page');
+    const pageSize = parsePositiveInt(query.pageSize ?? String(DEFAULT_PAGE_SIZE), 'pageSize');
+    if (pageSize > MAX_PAGE_SIZE) {
+      throw new ApiError(400, 'VALIDATION_ERROR', `pageSize 最大为 ${MAX_PAGE_SIZE}`);
+    }
+
+    const { ids, total } = await answerRepository.listByUserId(userId, page, pageSize);
+    const records = await answerRepository.findByIds(ids);
+    const ordered = ids
+      .map((id) => records.find((record) => record.id === id))
+      .filter((record): record is NonNullable<typeof record> => Boolean(record));
+
+    const questionIds = [...new Set(ordered.map((record) => record.questionId))];
+    const questions = await questionRepository.findByIds(questionIds);
+    const titleMap = new Map(questions.map((question) => [question.id, question.title]));
+
+    const items: UserAnswerSummary[] = ordered.map((record) => ({
+      id: record.id,
+      questionId: record.questionId,
+      questionTitle: titleMap.get(record.questionId) ?? '（问题已删除）',
+      content: record.content,
+      status: record.status,
+      likeCount: record.likeCount,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
     }));

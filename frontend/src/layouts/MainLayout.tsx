@@ -20,9 +20,9 @@ export function MainLayout() {
         <nav className="header-auth">
           {user ? (
             <>
-              <span className="user-brief">
+              <Link to="/me" className="user-brief">
                 {user.username}（积分 {user.points}）
-              </span>
+              </Link>
               <button type="button" onClick={handleLogout}>
                 退出登录
               </button>

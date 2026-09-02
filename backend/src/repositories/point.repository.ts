@@ -1,4 +1,6 @@
-import { PoolConnection, ResultSetHeader } from 'mysql2/promise';
+import { PoolConnection, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { pool } from '../config/database';
+import { PointTransactionSummary } from '../types/point';
 
 export interface CreatePointTransactionData {
   userId: number;
@@ -7,6 +9,13 @@ export interface CreatePointTransactionData {
   referenceType: string | null;
   referenceId: number | null;
   idempotencyKey: string;
+}
+
+interface PointTransactionRow extends RowDataPacket {
+  id: number;
+  amount: number;
+  type: string;
+  created_at: Date;
 }
 
 export const pointRepository = {
@@ -29,5 +38,35 @@ export const pointRepository = {
       },
     );
     return result.insertId;
+  },
+
+  // 按用户分页列出积分流水（我的积分，PRD 20.4）
+  async listByUserId(
+    userId: number,
+    page: number,
+    pageSize: number,
+  ): Promise<{ items: PointTransactionSummary[]; total: number }> {
+    const [countRows] = await pool.query<RowDataPacket[]>(
+      'SELECT COUNT(*) AS total FROM point_transactions WHERE user_id = :userId',
+      { userId },
+    );
+    const total = Number(countRows[0].total);
+
+    const [rows] = await pool.query<PointTransactionRow[]>(
+      `SELECT id, amount, type, created_at FROM point_transactions
+       WHERE user_id = :userId
+       ORDER BY created_at DESC, id DESC
+       LIMIT :limit OFFSET :offset`,
+      { userId, limit: pageSize, offset: (page - 1) * pageSize },
+    );
+    return {
+      items: rows.map((row) => ({
+        id: row.id,
+        amount: row.amount,
+        type: row.type,
+        createdAt: row.created_at,
+      })),
+      total,
+    };
   },
 };

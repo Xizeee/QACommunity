@@ -149,6 +149,28 @@ export const questionService = {
     return { items, pagination };
   },
 
+  // 我的提问：按作者分页，复用列表组装逻辑（PRD 20.2）
+  async listQuestionsByUser(userId: number, query: ListQueryInput): Promise<QuestionListResult> {
+    const page = parsePositiveInt(query.page ?? '1', 'page');
+    const pageSize = parsePositiveInt(query.pageSize ?? String(DEFAULT_PAGE_SIZE), 'pageSize');
+    if (pageSize > MAX_PAGE_SIZE) {
+      throw new ApiError(400, 'VALIDATION_ERROR', `pageSize 最大为 ${MAX_PAGE_SIZE}`);
+    }
+
+    const { ids, total } = await questionRepository.listByUser(userId, page, pageSize);
+    const records = await questionRepository.findByIds(ids);
+    const ordered = ids
+      .map((id) => records.find((record) => record.id === id))
+      .filter((record): record is NonNullable<typeof record> => Boolean(record));
+
+    const { tagMap, authorMap } = await loadRelations(ordered);
+    const items = ordered.map((record) =>
+      toSummary(record, authorMap.get(record.userId), tagMap.get(record.id) ?? []),
+    );
+
+    return { items, pagination: { page, pageSize, total } };
+  },
+
   async updateQuestion(
     userId: number,
     questionId: number,

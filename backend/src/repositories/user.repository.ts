@@ -75,6 +75,26 @@ export const userRepository = {
     return rows.map(toRecord);
   },
 
+  // 个人中心统计：提问数、回答数、获赞总数（PRD 20.1）
+  async getStats(
+    userId: number,
+  ): Promise<{ questionCount: number; answerCount: number; likeCount: number }> {
+    const [rows] = await pool.query<RowDataPacket[]>(
+      `SELECT
+         (SELECT COUNT(*) FROM questions WHERE user_id = :userId AND deleted_at IS NULL) AS question_count,
+         (SELECT COUNT(*) FROM answers WHERE user_id = :userId AND deleted_at IS NULL) AS answer_count,
+         (SELECT COALESCE(SUM(like_count), 0) FROM questions WHERE user_id = :userId AND deleted_at IS NULL)
+           + (SELECT COALESCE(SUM(like_count), 0) FROM answers WHERE user_id = :userId AND deleted_at IS NULL) AS like_count`,
+      { userId },
+    );
+    const row = rows[0] as { question_count: number; answer_count: number; like_count: number };
+    return {
+      questionCount: Number(row.question_count),
+      answerCount: Number(row.answer_count),
+      likeCount: Number(row.like_count),
+    };
+  },
+
   async create(input: CreateUserInput): Promise<number> {
     const [result] = await pool.execute<ResultSetHeader>(
       'INSERT INTO users (username, email, password_hash) VALUES (:username, :email, :passwordHash)',

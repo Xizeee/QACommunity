@@ -59,6 +59,29 @@ export const answerRepository = {
     return { ids: rows.map((row) => Number(row.id)), total };
   },
 
+  // 按作者分页列出回答，排除已删除回答及其所属已删除问题（我的回答，PRD 20.3）
+  async listByUserId(
+    userId: number,
+    page: number,
+    pageSize: number,
+  ): Promise<{ ids: number[]; total: number }> {
+    const where = 'a.user_id = :userId AND a.deleted_at IS NULL AND q.deleted_at IS NULL';
+    const [countRows] = await pool.query<RowDataPacket[]>(
+      `SELECT COUNT(*) AS total FROM answers a JOIN questions q ON q.id = a.question_id WHERE ${where}`,
+      { userId },
+    );
+    const total = Number(countRows[0].total);
+
+    const [rows] = await pool.query<RowDataPacket[]>(
+      `SELECT a.id FROM answers a JOIN questions q ON q.id = a.question_id
+       WHERE ${where}
+       ORDER BY a.created_at DESC, a.id DESC
+       LIMIT :limit OFFSET :offset`,
+      { userId, limit: pageSize, offset: (page - 1) * pageSize },
+    );
+    return { ids: rows.map((row) => Number(row.id)), total };
+  },
+
   async findByIds(ids: number[]): Promise<AnswerRecord[]> {
     if (ids.length === 0) {
       return [];

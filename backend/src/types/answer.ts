@@ -38,3 +38,20 @@ export interface AnswerListResult {
   items: AnswerSummary[];
   pagination: Pagination;
 }
+
+// 我的回答：附带所属问题标题（PRD 20.3）
+export interface UserAnswerSummary {
+  id: number;
+  questionId: number;
+  questionTitle: string;
+  content: string;
+  status: AnswerStatus;
+  likeCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserAnswerListResult {
+  items: UserAnswerSummary[];
+  pagination: Pagination;
+}
