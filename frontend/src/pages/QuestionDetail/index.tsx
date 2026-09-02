@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Breadcrumb } from '../../components/common/Breadcrumb';
 import { MarkdownContent } from '../../components/common/MarkdownContent';
 import { TagList } from '../../components/tag/TagList';
 import { Pagination } from '../../components/common/Pagination';
@@ -211,6 +212,7 @@ export function QuestionDetailPage() {
 
   return (
     <>
+      <Breadcrumb items={[{ label: '首页', to: '/' }, { label: question.title }]} />
       <section className="card question-detail">
         <div className="question-card-head">
           <h1 className="detail-title">{question.title}</h1>

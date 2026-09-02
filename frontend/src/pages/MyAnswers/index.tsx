@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import { Breadcrumb } from '../../components/common/Breadcrumb';
 import { RequireAuth } from '../../components/common/RequireAuth';
 import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
-import { MarkdownContent } from '../../components/common/MarkdownContent';
+import { AnswerListItem } from '../../components/answer/AnswerListItem';
 import { getMyAnswersApi } from '../../services/api/userApi';
-import { formatDate } from '../../utils/format';
 import type { UserAnswerListResult } from '../../types';
 
 const PAGE_SIZE = 20;
@@ -56,21 +56,12 @@ function MyAnswersContent() {
 
   return (
     <div>
+      <Breadcrumb
+        items={[{ label: '首页', to: '/' }, { label: '个人中心', to: '/me' }, { label: '我的回答' }]}
+      />
       <div className="answer-list">
         {result.items.map((answer) => (
-          <article key={answer.id} className="answer-card">
-            <div className="answer-card-head">
-              <Link to={`/questions/${answer.questionId}`} className="question-title">
-                {answer.questionTitle}
-              </Link>
-              {answer.status === 'ACCEPTED' && <span className="badge-solved">已采纳</span>}
-            </div>
-            <MarkdownContent content={answer.content} />
-            <div className="answer-card-footer">
-              <span>👍 {answer.likeCount}</span>
-              <span className="meta-author">{formatDate(answer.createdAt)}</span>
-            </div>
-          </article>
+          <AnswerListItem key={answer.id} answer={answer} />
         ))}
       </div>
       <Pagination

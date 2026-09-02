@@ -10,6 +10,9 @@ import { MePage } from '../pages/Me';
 import { MyQuestionsPage } from '../pages/MyQuestions';
 import { MyAnswersPage } from '../pages/MyAnswers';
 import { MyPointsPage } from '../pages/MyPoints';
+import { UserProfilePage } from '../pages/UserProfile';
+import { UserQuestionsPage } from '../pages/UserQuestions';
+import { UserAnswersPage } from '../pages/UserAnswers';
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +29,9 @@ export const router = createBrowserRouter([
       { path: 'me/questions', element: <MyQuestionsPage /> },
       { path: 'me/answers', element: <MyAnswersPage /> },
       { path: 'me/points', element: <MyPointsPage /> },
+      { path: 'users/:id', element: <UserProfilePage /> },
+      { path: 'users/:id/questions', element: <UserQuestionsPage /> },
+      { path: 'users/:id/answers', element: <UserAnswersPage /> },
     ],
   },
 ]);

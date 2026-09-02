@@ -33,3 +33,16 @@ export interface UserProfile extends AuthUser {
   answerCount: number;
   likeCount: number;
 }
+
+// 公开用户主页展示：不暴露邮箱等敏感字段（PRD 20.1 / 页面清单 /users/:id 未登录可访问）
+export interface PublicUserProfile {
+  id: number;
+  username: string;
+  avatar: string | null;
+  bio: string | null;
+  role: UserRole;
+  points: number;
+  questionCount: number;
+  answerCount: number;
+  likeCount: number;
+}

@@ -5,7 +5,7 @@ import { questionRouter } from './question.routes';
 import { tagRouter } from './tag.routes';
 import { answerRouter } from './answer.routes';
 import { likeRouter } from './like.routes';
-import { meRouter } from './user.routes';
+import { meRouter, usersRouter } from './user.routes';
 
 const apiRouter = Router();
 
@@ -15,6 +15,7 @@ apiRouter.use('/answers', answerRouter);
 apiRouter.use('/tags', tagRouter);
 apiRouter.use('/likes', likeRouter);
 apiRouter.use('/me', meRouter);
+apiRouter.use('/users', usersRouter);
 apiRouter.use('/', healthRouter);
 
 export default apiRouter;

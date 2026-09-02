@@ -2,6 +2,7 @@ import { http } from '../http';
 import type {
   ApiSuccess,
   PointListResult,
+  PublicUserProfile,
   QuestionListResult,
   UserAnswerListResult,
   UserProfile,
@@ -10,6 +11,35 @@ import type {
 export interface MeListParams {
   page?: number;
   pageSize?: number;
+}
+
+export async function getUserProfileApi(userId: number): Promise<PublicUserProfile> {
+  const response = await http.get<ApiSuccess<{ profile: PublicUserProfile }>>(
+    `/users/${userId}`,
+  );
+  return response.data.data.profile;
+}
+
+export async function getUserQuestionsApi(
+  userId: number,
+  params: MeListParams,
+): Promise<QuestionListResult> {
+  const response = await http.get<ApiSuccess<QuestionListResult>>(
+    `/users/${userId}/questions`,
+    { params },
+  );
+  return response.data.data;
+}
+
+export async function getUserAnswersApi(
+  userId: number,
+  params: MeListParams,
+): Promise<UserAnswerListResult> {
+  const response = await http.get<ApiSuccess<UserAnswerListResult>>(
+    `/users/${userId}/answers`,
+    { params },
+  );
+  return response.data.data;
 }
 
 export async function getMyProfileApi(): Promise<UserProfile> {

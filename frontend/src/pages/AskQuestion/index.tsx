@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Breadcrumb } from '../../components/common/Breadcrumb';
 import { QuestionForm } from '../../components/question/QuestionForm';
 import { createQuestionApi } from '../../services/api/questionApi';
 import { getTagsApi } from '../../services/api/tagApi';
@@ -66,15 +67,18 @@ export function AskQuestionPage() {
   };
 
   return (
-    <section className="card">
-      <h2>发布问题</h2>
-      <QuestionForm
-        tags={tags}
-        submitting={submitting}
-        error={error}
-        onSubmit={handleSubmit}
-        submitLabel="发布问题"
-      />
-    </section>
+    <>
+      <Breadcrumb items={[{ label: '首页', to: '/' }, { label: '发布问题' }]} />
+      <section className="card">
+        <h2>发布问题</h2>
+        <QuestionForm
+          tags={tags}
+          submitting={submitting}
+          error={error}
+          onSubmit={handleSubmit}
+          submitLabel="发布问题"
+        />
+      </section>
+    </>
   );
 }

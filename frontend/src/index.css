@@ -789,3 +789,31 @@ body {
 .point-amount.negative {
   color: #cf222e;
 }
+
+/* 面包屑导航 */
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #57606a;
+}
+
+.breadcrumb a {
+  color: #1f6feb;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-current {
+  color: #57606a;
+}
+
+.breadcrumb-sep {
+  color: #8c959f;
+}

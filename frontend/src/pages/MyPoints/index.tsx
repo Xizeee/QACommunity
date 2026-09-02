@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Breadcrumb } from '../../components/common/Breadcrumb';
 import { RequireAuth } from '../../components/common/RequireAuth';
 import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
@@ -64,6 +65,9 @@ function MyPointsContent() {
 
   return (
     <div>
+      <Breadcrumb
+        items={[{ label: '首页', to: '/' }, { label: '个人中心', to: '/me' }, { label: '我的积分' }]}
+      />
       <div className="points-summary">
         <span className="points-total">{result.currentPoints}</span>
         <span className="stat-label">当前积分</span>

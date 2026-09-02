@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Breadcrumb } from '../../components/common/Breadcrumb';
 import { QuestionForm } from '../../components/question/QuestionForm';
 import { getQuestionApi, updateQuestionApi } from '../../services/api/questionApi';
 import { getTagsApi } from '../../services/api/tagApi';
@@ -107,20 +108,29 @@ export function EditQuestionPage() {
   }
 
   return (
-    <section className="card">
-      <h2>编辑问题</h2>
-      <QuestionForm
-        tags={tags}
-        initial={{
-          title: question.title,
-          content: question.content,
-          tagIds: question.tags.map((tag) => tag.id),
-        }}
-        submitting={submitting}
-        error={error}
-        onSubmit={handleSubmit}
-        submitLabel="保存修改"
+    <>
+      <Breadcrumb
+        items={[
+          { label: '首页', to: '/' },
+          { label: question.title, to: `/questions/${question.id}` },
+          { label: '编辑问题' },
+        ]}
       />
-    </section>
+      <section className="card">
+        <h2>编辑问题</h2>
+        <QuestionForm
+          tags={tags}
+          initial={{
+            title: question.title,
+            content: question.content,
+            tagIds: question.tags.map((tag) => tag.id),
+          }}
+          submitting={submitting}
+          error={error}
+          onSubmit={handleSubmit}
+          submitLabel="保存修改"
+        />
+      </section>
+    </>
   );
 }

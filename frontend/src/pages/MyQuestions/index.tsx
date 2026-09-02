@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import { Breadcrumb } from '../../components/common/Breadcrumb';
 import { RequireAuth } from '../../components/common/RequireAuth';
 import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
+import { QuestionListItem } from '../../components/question/QuestionListItem';
 import { getMyQuestionsApi } from '../../services/api/userApi';
-import { formatDate } from '../../utils/format';
 import type { QuestionListResult } from '../../types';
 
 const PAGE_SIZE = 20;
@@ -60,21 +61,12 @@ function MyQuestionsContent() {
 
   return (
     <div>
+      <Breadcrumb
+        items={[{ label: '首页', to: '/' }, { label: '个人中心', to: '/me' }, { label: '我的提问' }]}
+      />
       <div className="question-list">
         {result.items.map((question) => (
-          <article key={question.id} className="question-card">
-            <div className="question-card-head">
-              <Link to={`/questions/${question.id}`} className="question-title">
-                {question.title}
-              </Link>
-              {question.status === 'SOLVED' && <span className="badge-solved">已解决</span>}
-            </div>
-            <div className="question-card-meta">
-              <span>💬 {question.answerCount}</span>
-              <span>👍 {question.likeCount}</span>
-              <span className="meta-author">{formatDate(question.createdAt)}</span>
-            </div>
-          </article>
+          <QuestionListItem key={question.id} question={question} />
         ))}
       </div>
       <Pagination

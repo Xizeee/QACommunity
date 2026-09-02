@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Breadcrumb } from '../../components/common/Breadcrumb';
-import { RequireAuth } from '../../components/common/RequireAuth';
 import { EmptyState } from '../../components/common/EmptyState';
-import { getMyProfileApi } from '../../services/api/userApi';
-import type { UserProfile } from '../../types';
+import { getUserProfileApi } from '../../services/api/userApi';
+import type { PublicUserProfile } from '../../types';
 
-function MeContent() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+function UserProfileContent({ userId }: { userId: number }) {
+  const [profile, setProfile] = useState<PublicUserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
-    getMyProfileApi()
+    setLoading(true);
+    setError(null);
+    getUserProfileApi(userId)
       .then((data) => {
         if (active) setProfile(data);
       })
@@ -26,7 +27,7 @@ function MeContent() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [userId]);
 
   if (loading) {
     return <p className="hint">加载中...</p>;
@@ -37,7 +38,7 @@ function MeContent() {
 
   return (
     <div>
-      <Breadcrumb items={[{ label: '首页', to: '/' }, { label: '个人中心' }]} />
+      <Breadcrumb items={[{ label: '首页', to: '/' }, { label: profile.username }]} />
       <section className="profile-card">
         <div className="profile-head">
           <div className="profile-avatar">{profile.username.charAt(0).toUpperCase()}</div>
@@ -67,18 +68,18 @@ function MeContent() {
       </section>
 
       <nav className="me-nav">
-        <Link to="/me/questions">我的提问</Link>
-        <Link to="/me/answers">我的回答</Link>
-        <Link to="/me/points">我的积分</Link>
+        <Link to={`/users/${userId}/questions`}>TA 的提问</Link>
+        <Link to={`/users/${userId}/answers`}>TA 的回答</Link>
       </nav>
     </div>
   );
 }
 
-export function MePage() {
-  return (
-    <RequireAuth>
-      <MeContent />
-    </RequireAuth>
-  );
+export function UserProfilePage() {
+  const { id } = useParams<{ id: string }>();
+  const userId = Number(id);
+  if (!Number.isInteger(userId) || userId <= 0) {
+    return <EmptyState title="用户 ID 不合法" />;
+  }
+  return <UserProfileContent userId={userId} />;
 }
